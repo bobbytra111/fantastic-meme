@@ -1,0 +1,1 @@
+tg://proxy?server=a01.lovely.lat&port=443&secret=ee499cbaa63a17e5071d5babf1ccba89f36130312e6c6f76656c792e6c6174
