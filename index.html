@@ -1,456 +1,548 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sunset Brew — кофейня у воды</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --cream:#fff3e8;
-  --cream-dim:rgba(255,243,232,.62);
-  --coral:#ff9b7a;
-  --rose:#f4799b;
-  --glass:rgba(255,248,242,.10);
-  --glass-border:rgba(255,240,228,.22);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUNSET BREW | Кофе под неоновым закатом</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-light: #fef5f7;
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --neon-pink: #ff6b9d;
+            --neon-orange: #ffa07a;
+            --neon-purple: #b19cd9;
+            --neon-cyan: #87ceeb;
+            --text-main: #3d3d4a;
+            --text-dim: #7a7a8c;
+            --gradient-sunset: linear-gradient(135deg, #ff6b9d 0%, #ffa07a 50%, #b19cd9 100%);
+        }
 
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  font-family:'Manrope',sans-serif;
-  font-weight:300;
-  color:var(--cream);
-  background:#1b0f2b;
-  line-height:1.75;
-  overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
-}
-::selection{background:rgba(244,121,155,.35)}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* ============ СЦЕНА: ЗАКАТ ============ */
-.scene{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+        html {
+            scroll-behavior: smooth;
+        }
 
-.sky{
-  position:absolute;inset:0;
-  background:
-    linear-gradient(180deg,
-      #1a1030 0%,
-      #35184a 18%,
-      #6b2a56 34%,
-      #a83f5c 46%,
-      #d9645e 55%,
-      #f08a5d 62%,
-      #ffb274 68%,
-      #ffd9a3 73%,
-      #f7b98e 78%,
-      #6d3355 82%,
-      #3b1b3d 100%);
-}
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.7;
+        }
 
-/* лёгкие полосы облаков */
-.clouds{position:absolute;inset:0}
-.cloud{
-  position:absolute;border-radius:50%;
-  filter:blur(46px);
-  opacity:.5;
-  animation:drift 120s linear infinite;
-}
-.c1{width:52vw;height:7vh;top:34%;left:-10%;background:rgba(255,190,150,.35)}
-.c2{width:38vw;height:5vh;top:44%;left:35%;background:rgba(255,160,140,.30);animation-duration:150s}
-.c3{width:60vw;height:6vh;top:56%;left:15%;background:rgba(255,220,180,.35);animation-duration:180s}
-.c4{width:30vw;height:4vh;top:26%;left:60%;background:rgba(200,120,160,.28);animation-duration:200s}
-@keyframes drift{
-  0%{transform:translateX(0)}
-  50%{transform:translateX(6vw)}
-  100%{transform:translateX(0)}
-}
+        /* Реалистичный фон заката */
+        .sunset-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(180deg, 
+                    #ff6b9d 0%,
+                    #ff8c6b 15%,
+                    #ffa07a 30%,
+                    #ffd4a3 45%,
+                    #fef5f7 60%,
+                    #fef5f7 100%);
+            opacity: 0.4;
+            z-index: -2;
+        }
 
-/* солнце */
-.sun{
-  position:absolute;left:50%;top:52%;
-  width:min(38vw,260px);aspect-ratio:1;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  background:radial-gradient(circle at 50% 55%,
-     #fff6e2 0%, #ffe0ac 32%, #ffb377 55%, rgba(255,140,90,0) 74%);
-  filter:blur(1px);
-  box-shadow:
-    0 0 90px 40px rgba(255,175,115,.35),
-    0 0 260px 120px rgba(255,120,110,.18);
-  animation:breathe 16s ease-in-out infinite;
-  will-change:transform;
-}
-@keyframes breathe{
-  0%,100%{filter:blur(1px);opacity:.92}
-  50%{filter:blur(2px);opacity:1}
-}
+        /* Облака */
+        .clouds {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 60%;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 20%, rgba(255, 255, 255, 0.25) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 40%, rgba(255, 255, 255, 0.2) 0%, transparent 45%);
+            z-index: -1;
+            animation: cloud-drift 60s linear infinite;
+        }
 
-/* вода */
-.water{
-  position:absolute;left:0;right:0;top:74%;bottom:0;
-  background:linear-gradient(180deg,
-    rgba(255,196,148,.55) 0%,
-    rgba(214,120,120,.45) 22%,
-    rgba(120,54,90,.75) 60%,
-    #241132 100%);
-}
-.water::after{
-  content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(180deg,
-    rgba(255,255,255,.07) 0 1px, transparent 1px 8px);
-  mix-blend-mode:overlay;opacity:.7;
-}
-.glint{
-  position:absolute;left:50%;top:0;bottom:0;width:16vw;
-  transform:translateX(-50%);
-  background:linear-gradient(180deg,
-    rgba(255,226,178,.65) 0%,
-    rgba(255,170,130,.28) 45%,
-    rgba(255,140,140,.05) 100%);
-  filter:blur(12px);
-  animation:shimmer 11s ease-in-out infinite;
-}
-@keyframes shimmer{
-  0%,100%{opacity:.75;transform:translateX(-50%) scaleX(1)}
-  50%{opacity:1;transform:translateX(-50%) scaleX(1.12)}
-}
+        @keyframes cloud-drift {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50px); }
+        }
 
-/* тонкая неоновая линия горизонта — без акцента */
-.horizon-glow{
-  position:absolute;left:0;right:0;top:73.4%;height:2px;
-  background:linear-gradient(90deg,
-    transparent,rgba(255,190,170,.5) 20%,rgba(255,225,190,.8) 50%,rgba(255,190,170,.5) 80%,transparent);
-  filter:blur(2px);
-  opacity:.55;
-}
+        /* Мягкие световые пятна */
+        .light-spot {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            z-index: -1;
+            animation: float 25s ease-in-out infinite;
+        }
 
-/* силуэт набережной */
-.skyline{position:absolute;left:0;right:0;top:71.5%;width:100%;height:9vh;opacity:.92}
-.palm{position:absolute;top:63%;width:min(16vw,180px);opacity:.9}
-.palm.l{left:-1vw}
-.palm.r{right:-1vw;transform:scaleX(-1)}
+        .light-spot-1 {
+            width: 500px; height: 500px;
+            background: #ff6b9d;
+            top: -150px; left: -150px;
+        }
 
-.vignette{
-  position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% 55%, transparent 40%, rgba(20,8,30,.55) 100%);
-}
-.grain{
-  position:absolute;inset:-50%;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='.55'/></svg>");
-  opacity:.14;mix-blend-mode:overlay;
-  animation:grain 8s steps(6) infinite;
-}
-@keyframes grain{
-  0%,100%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}
-  40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-2%)}80%{transform:translate(3%,3%)}
-}
+        .light-spot-2 {
+            width: 600px; height: 600px;
+            background: #b19cd9;
+            bottom: -200px; right: -200px;
+            animation-delay: 8s;
+        }
 
-/* ============ ШАПКА ============ */
-header{
-  position:fixed;top:0;left:0;right:0;z-index:50;
-  padding:22px clamp(20px,5vw,64px);
-  display:flex;justify-content:space-between;align-items:center;
-  background:linear-gradient(180deg,rgba(24,12,38,.45),rgba(24,12,38,.10));
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-}
-.logo{
-  font-family:'Fraunces',serif;font-weight:400;
-  font-size:1.35rem;letter-spacing:.02em;
-}
-.logo span{font-style:italic;color:var(--coral)}
-nav ul{display:flex;gap:clamp(18px,3vw,42px);list-style:none}
-nav a{
-  color:var(--cream-dim);text-decoration:none;font-size:.9rem;
-  font-weight:400;transition:color .5s ease;
-}
-nav a:hover{color:var(--cream)}
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(40px, -40px); }
+        }
 
-/* ============ СЕКЦИИ ============ */
-section{
-  padding:clamp(110px,16vh,180px) clamp(20px,6vw,80px);
-  max-width:1180px;margin:0 auto;
-}
-#hero{
-  min-height:100vh;max-width:1180px;
-  display:flex;flex-direction:column;justify-content:center;
-}
-.eyebrow{
-  font-size:.78rem;letter-spacing:.28em;text-transform:lowercase;
-  color:rgba(255,235,215,.55);margin-bottom:26px;
-}
-h1{
-  font-family:'Fraunces',serif;font-weight:300;
-  font-size:clamp(2.6rem,8vw,6.2rem);
-  line-height:1.02;letter-spacing:-.02em;
-  text-shadow:0 4px 40px rgba(30,10,40,.45);
-}
-h1 em{font-style:italic;color:#ffd9b8;font-weight:300}
-.lede{
-  max-width:44ch;margin-top:30px;font-size:clamp(1rem,1.5vw,1.15rem);
-  color:rgba(255,240,228,.75);
-}
-.actions{display:flex;gap:16px;margin-top:44px;flex-wrap:wrap}
+        /* Навигация */
+        header {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(254, 245, 247, 0.85);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 107, 157, 0.1);
+            z-index: 100;
+        }
 
-.btn{
-  display:inline-block;padding:14px 34px;border-radius:999px;
-  text-decoration:none;font-size:.92rem;font-weight:500;
-  transition:transform .5s cubic-bezier(.2,.8,.2,1),box-shadow .5s,background .5s;
-}
-.btn-solid{
-  background:linear-gradient(135deg,#ff9b7a,#f4799b);
-  color:#2b1020;box-shadow:0 12px 34px rgba(244,121,155,.28);
-}
-.btn-solid:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(244,121,155,.38)}
-.btn-ghost{
-  border:1px solid rgba(255,240,228,.35);color:var(--cream);
-}
-.btn-ghost:hover{background:rgba(255,240,228,.10);transform:translateY(-3px)}
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--gradient-sunset);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
 
-h2{
-  font-family:'Fraunces',serif;font-weight:300;font-style:italic;
-  font-size:clamp(1.9rem,4.4vw,3rem);letter-spacing:-.01em;
-  margin-bottom:14px;
-}
-.sub{color:rgba(255,240,228,.6);max-width:52ch;margin-bottom:56px}
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
 
-/* карточки */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:22px}
-.card{
-  background:var(--glass);
-  border:1px solid var(--glass-border);
-  border-radius:22px;
-  padding:30px 28px 26px;
-  backdrop-filter:blur(16px) saturate(120%);
-  -webkit-backdrop-filter:blur(16px) saturate(120%);
-  transition:transform .7s cubic-bezier(.2,.8,.2,1),background .7s,border-color .7s;
-}
-.card:hover{
-  transform:translateY(-6px);
-  background:rgba(255,248,242,.16);
-  border-color:rgba(255,240,228,.38);
-}
-.card-top{display:flex;justify-content:space-between;align-items:baseline;gap:14px}
-.card h3{
-  font-family:'Fraunces',serif;font-weight:400;font-size:1.28rem;letter-spacing:0;
-}
-.price{font-size:1.02rem;color:#ffc7a4;font-weight:500;white-space:nowrap}
-.card p{margin-top:12px;font-size:.94rem;color:rgba(255,240,228,.66)}
-.tag{
-  display:inline-block;margin-top:20px;font-size:.72rem;
-  letter-spacing:.14em;text-transform:lowercase;
-  color:rgba(255,215,185,.75);
-  border-bottom:1px solid rgba(255,215,185,.35);padding-bottom:2px;
-}
+        nav a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
 
-/* блок про вайб */
-.note{
-  max-width:640px;font-size:clamp(1.05rem,1.8vw,1.3rem);
-  font-weight:300;color:rgba(255,242,230,.85);
-}
-.note b{font-weight:400;font-style:italic;font-family:'Fraunces',serif;color:#ffd7b4}
-.meta{
-  margin-top:52px;display:flex;gap:clamp(28px,6vw,80px);flex-wrap:wrap;
-  padding-top:34px;border-top:1px solid rgba(255,240,228,.16);
-}
-.meta div{min-width:150px}
-.meta h4{
-  font-size:.72rem;letter-spacing:.24em;text-transform:lowercase;
-  color:rgba(255,240,228,.45);font-weight:400;margin-bottom:10px;
-}
-.meta p,.meta a{font-size:.95rem;color:rgba(255,242,230,.8);text-decoration:none;display:block}
-.meta a:hover{color:#ffc7a4}
+        nav a:hover {
+            color: var(--neon-pink);
+        }
 
-footer{
-  padding:56px clamp(20px,6vw,80px) 64px;text-align:center;
-  color:rgba(255,240,228,.45);font-size:.85rem;
-}
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px; left: 0;
+            width: 0; height: 1px;
+            background: var(--gradient-sunset);
+            transition: width 0.3s ease;
+        }
 
-/* появление */
-.rise{opacity:0;transform:translateY(22px);transition:opacity 1.4s ease,transform 1.4s cubic-bezier(.2,.8,.2,1)}
-.rise.in{opacity:1;transform:none}
+        nav a:hover::after { width: 100%; }
 
-@media(max-width:640px){
-  nav ul li:nth-child(n+3){display:none}
-  .palm{display:none}
-  .sun{top:50%}
-}
-@media(prefers-reduced-motion:reduce){
-  *{animation:none!important;transition-duration:.01ms!important}
-  .rise{opacity:1;transform:none}
-}
-</style>
+        /* Секции */
+        section {
+            min-height: 100vh;
+            padding: 120px 50px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* HERO */
+        #hero {
+            text-align: center;
+            align-items: center;
+        }
+
+        .hero-title {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            background: var(--gradient-sunset);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            max-width: 550px;
+            margin-bottom: 40px;
+            font-weight: 300;
+            line-height: 1.8;
+        }
+
+        .btn-soft {
+            padding: 16px 45px;
+            background: var(--gradient-sunset);
+            border: none;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.2);
+        }
+
+        .btn-soft:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(255, 107, 157, 0.3);
+        }
+
+        /* MENU */
+        #menu {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 60px;
+            background: var(--gradient-sunset);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .menu-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 35px;
+            position: relative;
+            transition: all 0.4s ease;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: var(--gradient-sunset);
+            opacity: 0.6;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(255, 107, 157, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-transform: uppercase;
+        }
+
+        .card-price {
+            font-size: 1.2rem;
+            font-weight: 600;
+            background: var(--gradient-sunset);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-desc {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .card-tag {
+            display: inline-block;
+            padding: 5px 14px;
+            background: rgba(255, 107, 157, 0.08);
+            color: var(--neon-pink);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 20px;
+        }
+
+        /* VIBE / ABOUT */
+        #vibe {
+            text-align: center;
+            align-items: center;
+        }
+
+        .vibe-text {
+            max-width: 750px;
+            font-size: 1.3rem;
+            font-weight: 300;
+            line-height: 1.9;
+            color: var(--text-main);
+        }
+
+        .vibe-text span {
+            background: var(--gradient-sunset);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 500;
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 60px 50px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto 40px;
+            text-align: left;
+        }
+
+        .footer-col h4 {
+            font-family: 'Space Mono', monospace;
+            background: var(--gradient-sunset);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .footer-col p, .footer-col a {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover { 
+            color: var(--neon-pink);
+        }
+
+        .copyright {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            opacity: 0.5;
+            margin-top: 40px;
+        }
+
+        /* Анимации появления */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            header { padding: 15px 20px; }
+            nav ul { gap: 20px; }
+            nav a { font-size: 0.75rem; }
+            section { padding: 100px 20px 60px; }
+            .section-title { font-size: 1.8rem; }
+            .vibe-text { font-size: 1rem; }
+            .light-spot { display: none; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- ======= ФОН: ЗАКАТ ======= -->
-<div class="scene" aria-hidden="true">
-  <div class="sky"></div>
-  <div class="clouds">
-    <div class="cloud c1"></div><div class="cloud c2"></div>
-    <div class="cloud c3"></div><div class="cloud c4"></div>
-  </div>
-  <div class="sun" id="sun"></div>
-  <div class="water"><div class="glint"></div></div>
-  <div class="horizon-glow"></div>
+    <div class="sunset-bg"></div>
+    <div class="clouds"></div>
+    <div class="light-spot light-spot-1"></div>
+    <div class="light-spot light-spot-2"></div>
 
-  <svg class="skyline" viewBox="0 0 1200 100" preserveAspectRatio="none">
-    <path fill="#22102f" d="M0 100V74h40v-12h18v12h26v-22h14v22h30v-9h22v9h34v-30h8l6-14 6 14h8v30h28v-16h20v16h36v-8h16v8h30v-26h12v26h34v-12h18v12h28v-34h10l5-12 5 12h10v34h32v-10h20v10h38v-20h14v20h30v-6h22v6h34v-28h16v28h28v-14h20v14h40v-10h18v10h34v-22h14v22h30v-8h24v8h44v-18h16v18h36v-12h20v12h40v26z"/>
-  </svg>
+    <header>
+        <div class="logo">SUNSET</div>
+        <nav>
+            <ul>
+                <li><a href="#menu">Меню</a></li>
+                <li><a href="#vibe">Вайб</a></li>
+                <li><a href="#contact">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
 
-  <svg class="palm l" viewBox="0 0 120 260">
-    <path fill="#1a0b26" d="M56 260c2-46 6-92 14-136l11 3c-9 43-14 89-15 133z"/>
-    <path fill="#1a0b26" d="M71 124c-18-22-44-31-71-27 26 1 48 11 63 29z"/>
-    <path fill="#1a0b26" d="M71 124c-4-27 6-52 27-68-16 20-22 44-19 68z"/>
-    <path fill="#1a0b26" d="M71 124c20-16 47-19 71-8-25-4-49 1-66 14z"/>
-    <path fill="#1a0b26" d="M71 124c14 12 23 32 24 52-6-19-15-36-30-46z"/>
-    <path fill="#1a0b26" d="M71 124c-16 8-34 8-50 0 17 3 33 2 46-4z"/>
-    <circle cx="68" cy="128" r="5" fill="#1a0b26"/>
-    <circle cx="79" cy="133" r="4" fill="#1a0b26"/>
-  </svg>
-  <svg class="palm r" viewBox="0 0 120 260">
-    <path fill="#1a0b26" d="M56 260c2-46 6-92 14-136l11 3c-9 43-14 89-15 133z"/>
-    <path fill="#1a0b26" d="M71 124c-18-22-44-31-71-27 26 1 48 11 63 29z"/>
-    <path fill="#1a0b26" d="M71 124c-4-27 6-52 27-68-16 20-22 44-19 68z"/>
-    <path fill="#1a0b26" d="M71 124c20-16 47-19 71-8-25-4-49 1-66 14z"/>
-    <path fill="#1a0b26" d="M71 124c14 12 23 32 24 52-6-19-15-36-30-46z"/>
-    <path fill="#1a0b26" d="M71 124c-16 8-34 8-50 0 17 3 33 2 46-4z"/>
-    <circle cx="68" cy="128" r="5" fill="#1a0b26"/>
-    <circle cx="79" cy="133" r="4" fill="#1a0b26"/>
-  </svg>
+    <main>
+        <section id="hero">
+            <h1 class="hero-title">Кофе & Закат</h1>
+            <p class="hero-subtitle">Место, где каждый глоток — как теплый ветер с океана. Яркий кофе для спокойного дня.</p>
+            <a href="#menu" class="btn-soft">Открыть меню</a>
+        </section>
 
-  <div class="vignette"></div>
-  <div class="grain"></div>
-</div>
+        <section id="menu">
+            <h2 class="section-title fade-in">НАШЕ МЕНЮ</h2>
+            <div class="menu-grid">
+                <div class="menu-card fade-in">
+                    <div class="card-header">
+                        <h3 class="card-title">Майами Санрайз</h3>
+                        <span class="card-price">₽ 320</span>
+                    </div>
+                    <p class="card-desc">Эспрессо с апельсиновым соком и карамелью. Вкус рассвета на побережье.</p>
+                    <span class="card-tag">Фирменный</span>
+                </div>
 
-<!-- ======= ШАПКА ======= -->
-<header>
-  <div class="logo">sunset <span>brew</span></div>
-  <nav>
-    <ul>
-      <li><a href="#menu">меню</a></li>
-      <li><a href="#place">место</a></li>
-      <li><a href="#visit">как найти</a></li>
-    </ul>
-  </nav>
-</header>
+                <div class="menu-card fade-in">
+                    <div class="card-header">
+                        <h3 class="card-title">Неон Латте</h3>
+                        <span class="card-price">₽ 380</span>
+                    </div>
+                    <p class="card-desc">Латте с сиропом маракуйи и кокосовым молоком. Тропический бриз в чашке.</p>
+                    <span class="card-tag">Популярное</span>
+                </div>
 
-<main>
-  <section id="hero">
-    <p class="eyebrow rise">кофейня у воды · открыта до позднего света</p>
-    <h1 class="rise">медленное утро,<br><em>тёплый свет</em></h1>
-    <p class="lede rise">Немного кофе, немного тишины и закат, который некуда спешить. Завариваем спокойно — как будто день только начинается.</p>
-    <div class="actions rise">
-      <a class="btn btn-solid" href="#menu">посмотреть меню</a>
-      <a class="btn btn-ghost" href="#visit">забронировать столик</a>
-    </div>
-  </section>
+                <div class="menu-card fade-in">
+                    <div class="card-header">
+                        <h3 class="card-title">Закатный Раф</h3>
+                        <span class="card-price">₽ 350</span>
+                    </div>
+                    <p class="card-desc">Классический раф с манго и куркумой. Золотистый, как солнце над океаном.</p>
+                    <span class="card-tag">Авторский</span>
+                </div>
 
-  <section id="menu">
-    <h2 class="rise">что заварить</h2>
-    <p class="sub rise">Шесть позиций, которые мы любим сами. Ничего лишнего — только то, что хорошо пьётся на закате.</p>
+                <div class="menu-card fade-in">
+                    <div class="card-header">
+                        <h3 class="card-title">Пальмовый Колд</h3>
+                        <span class="card-price">₽ 340</span>
+                    </div>
+                    <p class="card-desc">Холодный кофе с сиропом из финиковых пальм и ванилью. Освежает как океанский бриз.</p>
+                    <span class="card-tag">Холодный</span>
+                </div>
 
-    <div class="grid">
-      <article class="card rise">
-        <div class="card-top"><h3>Медленный эспрессо</h3><span class="price">250 ₽</span></div>
-        <p>Плотный, с тёмным шоколадом и сухой вишней. Пьётся стоя, у перил.</p>
-        <span class="tag">классика</span>
-      </article>
+                <div class="menu-card fade-in">
+                    <div class="card-header">
+                        <h3 class="card-title">Розовый Фламинго</h3>
+                        <span class="card-price">₽ 420</span>
+                    </div>
+                    <p class="card-desc">Розовый латте с клубничным сиропом и розовой водой. Фотогеничный и вкусный.</p>
+                    <span class="card-tag">Инстаграм</span>
+                </div>
 
-      <article class="card rise">
-        <div class="card-top"><h3>Латте «Полдень»</h3><span class="price">360 ₽</span></div>
-        <p>Молоко, ваниль и щепотка соли. Мягкий, как свет на стене в четыре часа.</p>
-        <span class="tag">молочное</span>
-      </article>
+                <div class="menu-card fade-in">
+                    <div class="card-header">
+                        <h3 class="card-title">Тропический Десерт</h3>
+                        <span class="card-price">₽ 290</span>
+                    </div>
+                    <p class="card-desc">Чизкейк с маракуйей и манго. Сладкий, как поцелуй под пальмами.</p>
+                    <span class="card-tag">Десерт</span>
+                </div>
+            </div>
+        </section>
 
-      <article class="card rise">
-        <div class="card-top"><h3>Раф «Абрикос»</h3><span class="price">390 ₽</span></div>
-        <p>Абрикосовое пюре, сливки и кардамон. Немного детского, немного летнего.</p>
-        <span class="tag">авторское</span>
-      </article>
+        <section id="vibe">
+            <h2 class="section-title fade-in">НАША АТМОСФЕРА</h2>
+            <p class="vibe-text fade-in">
+                Мы создали место, где <span>каждый день — как отпуск в Майами</span>. 
+                Мягкий свет, тропические растения и кофе, который заряжает спокойной энергией. 
+                Приходи с друзьями, работай за ноутбуком или просто наслаждайся моментом. 
+                <span>Здесь всегда лето.</span>
+            </p>
+        </section>
+    </main>
 
-      <article class="card rise">
-        <div class="card-top"><h3>Холодный чай с персиком</h3><span class="price">320 ₽</span></div>
-        <p>Улун, настоянный двенадцать часов, свежий персик и много льда.</p>
-        <span class="tag">без кофеина</span>
-      </article>
+    <footer id="contact">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>АДРЕС</h4>
+                <p>ул. Приморская, 15</p>
+                <p>Терраса с видом на парк</p>
+                <p>Вход со стороны набережной</p>
+            </div>
+            <div class="footer-col">
+                <h4>ЧАСЫ РАБОТЫ</h4>
+                <p>Пн - Пт: 08:00 — 22:00</p>
+                <p>Сб - Вс: 09:00 — 23:00</p>
+                <p>Завтрак весь день</p>
+            </div>
+            <div class="footer-col">
+                <h4>СОЦСЕТИ</h4>
+                <a href="#">Instagram: @sunset.brew</a>
+                <a href="#">Telegram: @sunset_coffee</a>
+                <a href="tel:+79991234567">+7 (999) 123-45-67</a>
+            </div>
+        </div>
+        <p class="copyright">© 2024 SUNSET BREW. Кофе с видом на закат.</p>
+    </footer>
 
-      <article class="card rise">
-        <div class="card-top"><h3>Фильтр дня</h3><span class="price">290 ₽</span></div>
-        <p>Меняется каждую неделю. Сегодня — Эфиопия, жасмин и бергамот.</p>
-        <span class="tag">альтернатива</span>
-      </article>
+    <script>
+        // Плавное появление элементов при скролле
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
 
-      <article class="card rise">
-        <div class="card-top"><h3>Сырники с инжиром</h3><span class="price">340 ₽</span></div>
-        <p>Тёплые, с инжирным вареньем и густой сметаной. Идеальны к фильтру.</p>
-        <span class="tag">кухня</span>
-      </article>
-    </div>
-  </section>
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-  <section id="place">
-    <h2 class="rise">про место</h2>
-    <p class="note rise">
-      Мы на набережной, в конце старой причальной линии. Здесь <b>тридцать посадок, много растений</b>
-      и ни одного телевизора. Работать можно, но не обязательно — иногда достаточно просто смотреть,
-      как солнце уходит в воду, и <b>допивать второй фильтр</b>.
-    </p>
-
-    <div class="meta rise" id="visit">
-      <div>
-        <h4>адрес</h4>
-        <p>набережная, 14</p>
-        <p>вход со стороны воды</p>
-      </div>
-      <div>
-        <h4>часы</h4>
-        <p>пн–пт · 08:00 — 23:00</p>
-        <p>сб–вс · 09:00 — 00:00</p>
-      </div>
-      <div>
-        <h4>связь</h4>
-        <a href="#">telegram · @sunsetbrew</a>
-        <a href="#">+7 900 000 00 00</a>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer>
-  sunset brew · 2024 · кофе, который не торопится
-</footer>
-
-<script>
-  // мягкое появление
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach((e,i)=>{
-      if(e.isIntersecting){
-        setTimeout(()=>e.target.classList.add('in'), i*90);
-        io.unobserve(e.target);
-      }
-    });
-  },{threshold:.15});
-  document.querySelectorAll('.rise').forEach(el=>io.observe(el));
-
-  // очень лёгкий параллакс солнца и пальм при скролле
-  const sun = document.getElementById('sun');
-  const palms = document.querySelectorAll('.palm');
-  let ticking = false;
-  window.addEventListener('scroll', ()=>{
-    if(ticking) return;
-    ticking = true;
-    requestAnimationFrame(()=>{
-      const y = window.scrollY;
-      sun.style.transform = `translate(-50%,-50%) translateY(${y*0.12}px)`;
-      sun.style.opacity = Math.max(.25, 1 - y/1400);
-      palms.forEach(p=> p.style.transform = `translateY(${y*0.05}px)` + (p.classList.contains('r') ? ' scaleX(-1)' : ''));
-      ticking = false;
-    });
-  },{passive:true});
-</script>
+        // Мягкий параллакс для световых пятен
+        const lightSpots = document.querySelectorAll('.light-spot');
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            
+            lightSpots.forEach((spot, index) => {
+                const speed = (index + 1) * 0.3;
+                spot.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+    </script>
 </body>
 </html>
