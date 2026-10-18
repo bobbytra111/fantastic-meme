@@ -1,1681 +1,530 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NeoNet — Скоростной интернет нового поколения</title>
-<style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  :root {
-    --bg-primary: #050816;
-    --bg-secondary: #0a0e27;
-    --neon-blue: #00d4ff;
-    --neon-blue-soft: #4d9fff;
-    --neon-purple: #7b61ff;
-    --text-primary: #e8f1ff;
-    --text-secondary: #8b9bb8;
-    --card-bg: rgba(15, 23, 55, 0.5);
-    --border-glow: rgba(0, 212, 255, 0.3);
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    overflow-x: hidden;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
-
-  /* Анимированный фон */
-  .bg-animation {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    background: radial-gradient(ellipse at top, #0a1540 0%, var(--bg-primary) 50%);
-    overflow: hidden;
-  }
-
-  .bg-animation::before,
-  .bg-animation::after {
-    content: '';
-    position: absolute;
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.3;
-    animation: float 20s ease-in-out infinite;
-  }
-
-  .bg-animation::before {
-    background: var(--neon-blue);
-    top: -200px;
-    left: -200px;
-  }
-
-  .bg-animation::after {
-    background: var(--neon-purple);
-    bottom: -200px;
-    right: -200px;
-    animation-delay: -10s;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(100px, -50px) scale(1.1); }
-    66% { transform: translate(-50px, 100px) scale(0.9); }
-  }
-
-  /* Навигация */
-  nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    padding: 20px 5%;
-    background: rgba(5, 8, 22, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
-    transition: all 0.4s ease;
-  }
-
-  .nav-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .logo {
-    font-size: 24px;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.5px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .logo-icon {
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-    animation: pulse 3s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.5); }
-    50% { box-shadow: 0 0 30px rgba(0, 212, 255, 0.8); }
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 40px;
-    list-style: none;
-  }
-
-  .nav-links a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-size: 15px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-
-  .nav-links a::after {
-    content: '';
-    position: absolute;
-    bottom: -6px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
-    transition: width 0.3s ease;
-    box-shadow: 0 0 10px var(--neon-blue);
-  }
-
-  .nav-links a:hover {
-    color: var(--text-primary);
-  }
-
-  .nav-links a:hover::after {
-    width: 100%;
-  }
-
-  .nav-cta {
-    padding: 10px 24px;
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    border: none;
-    border-radius: 10px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
-  }
-
-  .nav-cta:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
-  }
-
-  /* Hero */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    padding: 120px 5% 80px;
-    position: relative;
-  }
-
-  .hero-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
-  }
-
-  .hero-content {
-    animation: fadeInUp 1s ease;
-  }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid var(--border-glow);
-    border-radius: 100px;
-    font-size: 13px;
-    color: var(--neon-blue);
-    margin-bottom: 24px;
-    backdrop-filter: blur(10px);
-  }
-
-  .hero-badge::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: var(--neon-blue);
-    border-radius: 50%;
-    box-shadow: 0 0 10px var(--neon-blue);
-    animation: blink 2s ease-in-out infinite;
-  }
-
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  .hero h1 {
-    font-size: clamp(40px, 5vw, 68px);
-    font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 24px;
-    letter-spacing: -1.5px;
-  }
-
-  .hero h1 span {
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    position: relative;
-    display: inline-block;
-  }
-
-  .hero p {
-    font-size: 18px;
-    color: var(--text-secondary);
-    margin-bottom: 40px;
-    max-width: 500px;
-  }
-
-  .hero-buttons {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .btn-primary, .btn-secondary {
-    padding: 16px 32px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    color: white;
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0 40px rgba(0, 212, 255, 0.7);
-  }
-
-  .btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary);
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    backdrop-filter: blur(10px);
-  }
-
-  .btn-secondary:hover {
-    background: rgba(0, 212, 255, 0.1);
-    border-color: var(--neon-blue);
-    transform: translateY(-3px);
-  }
-
-  .hero-stats {
-    display: flex;
-    gap: 40px;
-    margin-top: 60px;
-    padding-top: 40px;
-    border-top: 1px solid rgba(0, 212, 255, 0.1);
-  }
-
-  .stat-item h3 {
-    font-size: 36px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .stat-item p {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin: 0;
-  }
-
-  /* Hero визуал */
-  .hero-visual {
-    position: relative;
-    height: 500px;
-    animation: fadeIn 1.2s ease;
-  }
-
-  .speed-circle {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 380px;
-    height: 380px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 212, 255, 0.15) 0%, transparent 70%);
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 
-      0 0 60px rgba(0, 212, 255, 0.3),
-      inset 0 0 60px rgba(0, 212, 255, 0.1);
-    animation: rotate 20s linear infinite;
-  }
-
-  .speed-circle::before {
-    content: '';
-    position: absolute;
-    inset: -20px;
-    border-radius: 50%;
-    border: 1px dashed rgba(0, 212, 255, 0.3);
-    animation: rotate 30s linear infinite reverse;
-  }
-
-  .speed-circle::after {
-    content: '';
-    position: absolute;
-    inset: -50px;
-    border-radius: 50%;
-    border: 1px solid rgba(123, 97, 255, 0.2);
-    animation: rotate 40s linear infinite;
-  }
-
-  @keyframes rotate {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
-  }
-
-  .speed-value {
-    font-size: 80px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1;
-    text-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
-  }
-
-  .speed-unit {
-    font-size: 20px;
-    color: var(--text-secondary);
-    margin-top: 8px;
-    letter-spacing: 2px;
-  }
-
-  .speed-label {
-    font-size: 14px;
-    color: var(--neon-blue);
-    margin-top: 16px;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-  }
-
-  /* Секции */
-  section {
-    padding: 100px 5%;
-    position: relative;
-  }
-
-  .section-container {
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  .section-header {
-    text-align: center;
-    margin-bottom: 70px;
-  }
-
-  .section-label {
-    display: inline-block;
-    padding: 6px 16px;
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid var(--border-glow);
-    border-radius: 100px;
-    font-size: 13px;
-    color: var(--neon-blue);
-    margin-bottom: 16px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-
-  .section-header h2 {
-    font-size: clamp(32px, 4vw, 52px);
-    font-weight: 800;
-    margin-bottom: 16px;
-    letter-spacing: -1px;
-  }
-
-  .section-header h2 span {
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .section-header p {
-    font-size: 18px;
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  /* Тарифы */
-  .plans-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-  }
-
-  .plan-card {
-    position: relative;
-    padding: 40px 32px;
-    background: var(--card-bg);
-    border: 1px solid rgba(0, 212, 255, 0.2);
-    border-radius: 24px;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(40px);
-  }
-
-  .plan-card.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .plan-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 24px;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.5), rgba(123, 97, 255, 0.3), transparent);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-  }
-
-  .plan-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 
-      0 20px 60px rgba(0, 212, 255, 0.2),
-      0 0 40px rgba(0, 212, 255, 0.15);
-    border-color: rgba(0, 212, 255, 0.5);
-  }
-
-  .plan-card:hover::before {
-    opacity: 1;
-  }
-
-  .plan-card.featured {
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 97, 255, 0.05));
-    border-color: rgba(0, 212, 255, 0.5);
-    box-shadow: 0 0 40px rgba(0, 212, 255, 0.2);
-  }
-
-  .plan-badge {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 6px 12px;
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    border-radius: 100px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-  }
-
-  .plan-icon {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(123, 97, 255, 0.1));
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 24px;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
-  }
-
-  .plan-icon svg {
-    width: 28px;
-    height: 28px;
-    stroke: var(--neon-blue);
-    fill: none;
-    stroke-width: 2;
-  }
-
-  .plan-name {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-
-  .plan-desc {
-    color: var(--text-secondary);
-    font-size: 14px;
-    margin-bottom: 24px;
-  }
-
-  .plan-price {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
-  }
-
-  .plan-price .amount {
-    font-size: 48px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .plan-price .currency {
-    font-size: 20px;
-    color: var(--text-secondary);
-  }
-
-  .plan-price .period {
-    font-size: 14px;
-    color: var(--text-secondary);
-  }
-
-  .plan-speed {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    background: rgba(0, 212, 255, 0.05);
-    border: 1px solid rgba(0, 212, 255, 0.15);
-    border-radius: 12px;
-    margin-bottom: 24px;
-  }
-
-  .plan-speed svg {
-    width: 20px;
-    height: 20px;
-    stroke: var(--neon-blue);
-    fill: none;
-  }
-
-  .plan-speed-text {
-    flex: 1;
-  }
-
-  .plan-speed-text .label {
-    font-size: 12px;
-    color: var(--text-secondary);
-    display: block;
-  }
-
-  .plan-speed-text .value {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--neon-blue);
-  }
-
-  .plan-features {
-    list-style: none;
-    margin-bottom: 32px;
-  }
-
-  .plan-features li {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 0;
-    color: var(--text-secondary);
-    font-size: 14px;
-  }
-
-  .plan-features li::before {
-    content: '';
-    width: 20px;
-    height: 20px;
-    background: rgba(0, 212, 255, 0.15);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300d4ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: center;
-  }
-
-  .plan-btn {
-    width: 100%;
-    padding: 14px;
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    border-radius: 12px;
-    color: var(--text-primary);
-    font-weight: 600;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .plan-btn:hover {
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    border-color: transparent;
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-    transform: translateY(-2px);
-  }
-
-  .plan-card.featured .plan-btn {
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    border-color: transparent;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-  }
-
-  /* Преимущества */
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
-  }
-
-  .feature-card {
-    padding: 32px;
-    background: var(--card-bg);
-    border: 1px solid rgba(0, 212, 255, 0.15);
-    border-radius: 20px;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  .feature-card.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .feature-card:hover {
-    transform: translateY(-6px);
-    border-color: rgba(0, 212, 255, 0.4);
-    box-shadow: 0 15px 40px rgba(0, 212, 255, 0.15);
-  }
-
-  .feature-icon {
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(123, 97, 255, 0.08));
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
-    transition: all 0.3s ease;
-  }
-
-  .feature-card:hover .feature-icon {
-    transform: scale(1.1) rotate(-5deg);
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
-  }
-
-  .feature-icon svg {
-    width: 26px;
-    height: 26px;
-    stroke: var(--neon-blue);
-    fill: none;
-    stroke-width: 2;
-  }
-
-  .feature-card h3 {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-
-  .feature-card p {
-    color: var(--text-secondary);
-    font-size: 15px;
-  }
-
-  /* Покрытие */
-  .coverage-section {
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.03), rgba(123, 97, 255, 0.02));
-    border-top: 1px solid rgba(0, 212, 255, 0.1);
-    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
-  }
-
-  .coverage-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
-  }
-
-  .coverage-content h2 {
-    font-size: clamp(32px, 4vw, 48px);
-    font-weight: 800;
-    margin-bottom: 20px;
-    letter-spacing: -1px;
-  }
-
-  .coverage-content h2 span {
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .coverage-content p {
-    color: var(--text-secondary);
-    font-size: 17px;
-    margin-bottom: 32px;
-  }
-
-  .coverage-stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-
-  .coverage-stat {
-    padding: 24px;
-    background: var(--card-bg);
-    border: 1px solid rgba(0, 212, 255, 0.15);
-    border-radius: 16px;
-    backdrop-filter: blur(20px);
-    transition: all 0.3s ease;
-  }
-
-  .coverage-stat:hover {
-    border-color: rgba(0, 212, 255, 0.4);
-    transform: translateY(-4px);
-    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.15);
-  }
-
-  .coverage-stat .num {
-    font-size: 36px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 4px;
-  }
-
-  .coverage-stat .label {
-    color: var(--text-secondary);
-    font-size: 14px;
-  }
-
-  .coverage-visual {
-    position: relative;
-    height: 400px;
-    background: var(--card-bg);
-    border: 1px solid rgba(0, 212, 255, 0.2);
-    border-radius: 24px;
-    backdrop-filter: blur(20px);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .map-dots {
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
-
-  .map-dot {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    background: var(--neon-blue);
-    border-radius: 50%;
-    box-shadow: 0 0 20px var(--neon-blue);
-    animation: pulseDot 2s ease-in-out infinite;
-  }
-
-  .map-dot::before {
-    content: '';
-    position: absolute;
-    inset: -8px;
-    border: 2px solid var(--neon-blue);
-    border-radius: 50%;
-    animation: ripple 2s ease-out infinite;
-  }
-
-  @keyframes pulseDot {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.2); opacity: 0.8; }
-  }
-
-  @keyframes ripple {
-    0% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(3); opacity: 0; }
-  }
-
-  /* FAQ */
-  .faq-container {
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  .faq-item {
-    background: var(--card-bg);
-    border: 1px solid rgba(0, 212, 255, 0.15);
-    border-radius: 16px;
-    margin-bottom: 16px;
-    backdrop-filter: blur(20px);
-    overflow: hidden;
-    transition: all 0.3s ease;
-  }
-
-  .faq-item:hover {
-    border-color: rgba(0, 212, 255, 0.3);
-  }
-
-  .faq-item.active {
-    border-color: rgba(0, 212, 255, 0.5);
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.15);
-  }
-
-  .faq-question {
-    padding: 24px 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 16px;
-    transition: color 0.3s ease;
-  }
-
-  .faq-question:hover {
-    color: var(--neon-blue);
-  }
-
-  .faq-toggle {
-    width: 32px;
-    height: 32px;
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-    margin-left: 20px;
-  }
-
-  .faq-toggle svg {
-    width: 14px;
-    height: 14px;
-    stroke: var(--neon-blue);
-    transition: transform 0.3s ease;
-  }
-
-  .faq-item.active .faq-toggle {
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    transform: rotate(180deg);
-  }
-
-  .faq-item.active .faq-toggle svg {
-    stroke: white;
-  }
-
-  .faq-answer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease, padding 0.4s ease;
-    padding: 0 28px;
-    color: var(--text-secondary);
-    font-size: 15px;
-    line-height: 1.7;
-  }
-
-  .faq-item.active .faq-answer {
-    max-height: 300px;
-    padding: 0 28px 24px;
-  }
-
-  /* CTA */
-  .cta-section {
-    padding: 80px 5%;
-  }
-
-  .cta-box {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 60px;
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 97, 255, 0.05));
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    border-radius: 32px;
-    backdrop-filter: blur(20px);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 60px rgba(0, 212, 255, 0.15);
-  }
-
-  .cta-box::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
-    animation: rotate 30s linear infinite;
-  }
-
-  .cta-box > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  .cta-box h2 {
-    font-size: clamp(28px, 3.5vw, 42px);
-    font-weight: 800;
-    margin-bottom: 16px;
-    letter-spacing: -0.5px;
-  }
-
-  .cta-box p {
-    color: var(--text-secondary);
-    font-size: 17px;
-    margin-bottom: 32px;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  /* Футер */
-  footer {
-    padding: 60px 5% 30px;
-    border-top: 1px solid rgba(0, 212, 255, 0.1);
-    background: rgba(5, 8, 22, 0.5);
-  }
-
-  .footer-container {
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  .footer-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 40px;
-    margin-bottom: 40px;
-  }
-
-  .footer-brand p {
-    color: var(--text-secondary);
-    margin-top: 16px;
-    font-size: 14px;
-    max-width: 300px;
-  }
-
-  .footer-col h4 {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--neon-blue);
-  }
-
-  .footer-col ul {
-    list-style: none;
-  }
-
-  .footer-col li {
-    margin-bottom: 12px;
-  }
-
-  .footer-col a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-size: 14px;
-    transition: color 0.3s ease;
-  }
-
-  .footer-col a:hover {
-    color: var(--neon-blue);
-  }
-
-  .footer-bottom {
-    padding-top: 30px;
-    border-top: 1px solid rgba(0, 212, 255, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    color: var(--text-secondary);
-    font-size: 13px;
-  }
-
-  .social-links {
-    display: flex;
-    gap: 12px;
-  }
-
-  .social-links a {
-    width: 36px;
-    height: 36px;
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid rgba(0, 212, 255, 0.2);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-  }
-
-  .social-links a:hover {
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-    border-color: transparent;
-    transform: translateY(-3px);
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-  }
-
-  .social-links svg {
-    width: 16px;
-    height: 16px;
-    stroke: var(--neon-blue);
-    fill: none;
-    stroke-width: 2;
-  }
-
-  .social-links a:hover svg {
-    stroke: white;
-  }
-
-  /* Анимации появления */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  /* Адаптив */
-  @media (max-width: 968px) {
-    .nav-links { display: none; }
-    .hero-container { grid-template-columns: 1fr; }
-    .hero-visual { height: 350px; }
-    .speed-circle { width: 280px; height: 280px; }
-    .speed-value { font-size: 60px; }
-    .coverage-grid { grid-template-columns: 1fr; }
-    .footer-grid { grid-template-columns: 1fr 1fr; }
-    .hero-stats { gap: 24px; flex-wrap: wrap; }
-    .cta-box { padding: 40px 24px; }
-  }
-
-  @media (max-width: 568px) {
-    .footer-grid { grid-template-columns: 1fr; }
-    .hero-buttons { flex-direction: column; }
-    .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NØIR BREW | Кофейня в тени неона</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;700&family=Roboto+Mono:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050508;
+            --bg-card: #0d0d12;
+            --neon-cyan: #00f3ff;
+            --neon-magenta: #ff0055;
+            --neon-purple: #b000ff;
+            --text-main: #c8c8d0;
+            --text-dim: #6a6a75;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Roboto Mono', monospace;
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        /* Эффект сканлайнов (CRT монитор) */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.4;
+        }
+
+        /* Фоновая сетка */
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black 10%, transparent 70%);
+            z-index: -2;
+        }
+
+        /* Эффект неонового дождя */
+        .rain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background: transparent;
+        }
+        .rain::before, .rain::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 200%;
+            background: linear-gradient(to bottom, transparent 90%, var(--neon-cyan) 95%, transparent 100%),
+                        linear-gradient(to bottom, transparent 90%, var(--neon-magenta) 95%, transparent 100%);
+            background-size: 3px 120px, 2px 180px;
+            background-position: 20% 0, 80% 0;
+            animation: rain-fall 1.5s linear infinite;
+            opacity: 0.3;
+        }
+        .rain::after {
+            background-size: 4px 150px, 1px 200px;
+            background-position: 50% 0, 30% 0;
+            animation-duration: 2s;
+            opacity: 0.2;
+        }
+
+        @keyframes rain-fall {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Навигация */
+        header {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 5, 8, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-magenta), 0 0 20px var(--neon-magenta);
+            letter-spacing: 2px;
+            animation: flicker 4s infinite alternate;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav a:hover {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px var(--neon-cyan);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px; left: 0;
+            width: 0; height: 1px;
+            background: var(--neon-cyan);
+            box-shadow: 0 0 5px var(--neon-cyan);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after { width: 100%; }
+
+        /* Секции */
+        section {
+            min-height: 100vh;
+            padding: 120px 50px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* HERO */
+        #hero {
+            text-align: center;
+            align-items: center;
+        }
+
+        .hero-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--neon-cyan), #fff, var(--neon-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.3));
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .btn-neon {
+            padding: 15px 40px;
+            background: transparent;
+            border: 1px solid var(--neon-magenta);
+            color: var(--neon-magenta);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            text-decoration: none;
+        }
+
+        .btn-neon:hover {
+            color: #fff;
+            background: var(--neon-magenta);
+            box-shadow: 0 0 20px var(--neon-magenta), 0 0 40px var(--neon-magenta);
+        }
+
+        /* MENU */
+        #menu {
+            background: linear-gradient(180deg, transparent, rgba(13, 13, 18, 0.8), transparent);
+        }
+
+        .section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 60px;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-cyan);
+            letter-spacing: 5px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .menu-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            position: relative;
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .menu-card:hover::before { left: 100%; }
+
+        .menu-card:hover {
+            border-color: rgba(0, 243, 255, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 243, 255, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .card-price {
+            color: var(--neon-magenta);
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-shadow: 0 0 5px rgba(255, 0, 85, 0.5);
+        }
+
+        .card-desc {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .card-tag {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 4px 10px;
+            border: 1px solid var(--neon-purple);
+            color: var(--neon-purple);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* VIBE / ABOUT */
+        #vibe {
+            text-align: center;
+            align-items: center;
+        }
+
+        .vibe-text {
+            max-width: 800px;
+            font-size: 1.5rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: var(--text-main);
+        }
+
+        .vibe-text span {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+            font-weight: 500;
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 60px 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(5, 5, 8, 0.9);
+            text-align: center;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto 40px;
+            text-align: left;
+        }
+
+        .footer-col h4 {
+            font-family: 'Oswald', sans-serif;
+            color: var(--neon-magenta);
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .footer-col p, .footer-col a {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover { color: var(--neon-cyan); }
+
+        .copyright {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            opacity: 0.5;
+            margin-top: 40px;
+        }
+
+        /* Анимации появления */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Мерцание неона */
+        @keyframes flicker {
+            0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+                opacity: 1;
+                text-shadow: 0 0 4px #fff, 0 0 11px #fff, 0 0 19px #fff, 0 0 40px var(--neon-magenta), 0 0 80px var(--neon-magenta);
+            }
+            20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+                opacity: 0.6;
+                text-shadow: none;
+            }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            header { padding: 15px 20px; }
+            nav ul { gap: 20px; }
+            nav a { font-size: 0.8rem; }
+            section { padding: 100px 20px 60px; }
+            .section-title { font-size: 2rem; }
+            .vibe-text { font-size: 1.1rem; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="bg-animation"></div>
+    <div class="grid-bg"></div>
+    <div class="rain"></div>
 
-<nav>
-  <div class="nav-container">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
-          <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
-          <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-          <line x1="12" y1="20" x2="12.01" y2="20"></line>
-        </svg>
-      </div>
-      NeoNet
-    </div>
-    <ul class="nav-links">
-      <li><a href="#plans">Тарифы</a></li>
-      <li><a href="#features">Преимущества</a></li>
-      <li><a href="#coverage">Покрытие</a></li>
-      <li><a href="#faq">Вопросы</a></li>
-    </ul>
-    <button class="nav-cta">Подключить</button>
-  </div>
-</nav>
+    <header>
+        <div class="logo">NØIR</div>
+        <nav>
+            <ul>
+                <li><a href="#menu">Меню</a></li>
+                <li><a href="#vibe">Атмосфера</a></li>
+                <li><a href="#contact">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
 
-<section class="hero">
-  <div class="hero-container">
-    <div class="hero-content">
-      <div class="hero-badge">Новое поколение скорости</div>
-      <h1>Интернет, который <span>опережает время</span></h1>
-      <p>Подключайтесь к оптоволоконной сети NeoNet со скоростью до 10 Гбит/с. Стабильное соединение, минимальный пинг, безлимитный трафик.</p>
-      <div class="hero-buttons">
-        <button class="btn-primary">
-          Проверить адрес
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-            <polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
-        </button>
-        <button class="btn-secondary">Все тарифы</button>
-      </div>
-      <div class="hero-stats">
-        <div class="stat-item">
-          <h3>10 Гбит/с</h3>
-          <p>Максимальная скорость</p>
-        </div>
-        <div class="stat-item">
-          <h3>99.9%</h3>
-          <p>Время работы сети</p>
-        </div>
-        <div class="stat-item">
-          <h3>24/7</h3>
-          <p>Техподдержка</p>
-        </div>
-      </div>
-    </div>
-    <div class="hero-visual">
-      <div class="speed-circle">
-        <div class="speed-value">10</div>
-        <div class="speed-unit">Гбит/с</div>
-        <div class="speed-label">Максимум</div>
-      </div>
-    </div>
-  </div>
-</section>
+    <main>
+        <section id="hero">
+            <h1 class="hero-title">Тени & Кофе</h1>
+            <p class="hero-subtitle">Мы варим кофе для тех, кто не спит, когда гаснут фонари. Место, где темнота встречается с неоновым светом.</p>
+            <a href="#menu" class="btn-neon">Посмотреть меню</a>
+        </section>
 
-<section id="plans">
-  <div class="section-container">
-    <div class="section-header">
-      <div class="section-label">Тарифы</div>
-      <h2>Выберите свой <span>идеальный план</span></h2>
-      <p>Гибкие тарифы для дома, работы и бизнеса. Без скрытых платежей и ограничений.</p>
-    </div>
-    <div class="plans-grid">
-      <div class="plan-card">
-        <div class="plan-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-          </svg>
-        </div>
-        <h3 class="plan-name">Старт</h3>
-        <p class="plan-desc">Для базовых задач и сёрфинга</p>
-        <div class="plan-price">
-          <span class="amount">490</span>
-          <span class="currency">₽</span>
-          <span class="period">/ мес</span>
-        </div>
-        <div class="plan-speed">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
-          <div class="plan-speed-text">
-            <span class="label">Скорость до</span>
-            <span class="value">100 Мбит/с</span>
-          </div>
-        </div>
-        <ul class="plan-features">
-          <li>Безлимитный трафик</li>
-          <li>Wi-Fi роутер в подарок</li>
-          <li>Подключение за 1 день</li>
-          <li>Базовая техподдержка</li>
-        </ul>
-        <button class="plan-btn">Подключить</button>
-      </div>
+        <section id="menu">
+            <h2 class="section-title fade-in">// МЕНЮ</h2>
+            <div class="menu-grid">
+                <div class="menu-card fade-in">
+                    <div class="card-header">
+                        <h3 class="card-title">Синтезатор</h3>
+                        <span class="card-price">₽ 250</span>
+                    </div>
+                    <p class="card-desc">Двойной эспрессо. Черный как ночь, крепкий как бас синтезатора в 3 часа утра.</p>
+                    <span class="card-tag">Классика</span>
+                </div>
 
-      <div class="plan-card featured">
-        <div class="plan-badge">Популярный</div>
-        <div class="plan-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
-        </div>
-        <h3 class="plan-name">Оптимум</h3>
-        <p class="plan-desc">Для семьи и стриминга в 4K</p>
-        <div class="plan-price">
-          <span class="amount">790</span>
-          <span class="currency">₽</span>
-          <span class="period">/ мес</span>
-        </div>
-        <div class="plan-speed">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
-          <div class="plan-speed-text">
-            <span class="label">Скорость до</span>
-            <span class="value">500 Мбит/с</span>
-          </div>
-        </div>
-        <ul class="plan-features">
-          <li>Безлимитный трафик</li>
-          <li>Wi-Fi 6 роутер бесплатно</li>
-          <li>Статический IP</li>
-          <li>Приоритетная поддержка</li>
-          <li>Онлайн-кинотеатр в подарок</li>
-        </ul>
-        <button class="plan-btn">Подключить</button>
-      </div>
+                <div class="menu-card fade-in">
+                    <div class="card-header">
+                        <h3 class="card-title">Кибер-Латте</h3>
+                        <span class="card-price">₽ 380</span>
+                    </div>
+                    <p class="card-desc">Нежное молоко, плотная пена и сироп "Малиновый неон". Светится в ультрафиолете.</p>
+                    <span class="card-tag">Авторский</span>
+                </div>
 
-      <div class="plan-card">
-        <div class="plan-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-          </svg>
-        </div>
-        <h3 class="plan-name">Максимум</h3>
-        <p class="plan-desc">Для геймеров и профессионалов</p>
-        <div class="plan-price">
-          <span class="amount">1490</span>
-          <span class="currency">₽</span>
-          <span class="period">/ мес</span>
-        </div>
-        <div class="plan-speed">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
-          <div class="plan-speed-text">
-            <span class="label">Скорость до</span>
-            <span class="value">1 Гбит/с</span>
-          </div>
-        </div>
-        <ul class="plan-features">
-          <li>Безлимитный трафик</li>
-          <li>Премиум Wi-Fi 6E роутер</li>
-          <li>Белый IP + IPv6</li>
-          <li>VIP поддержка 24/7</li>
-          <li>Все стриминги включены</li>
-          <li>Игровой пинг &lt;5 мс</li>
-        </ul>
-        <button class="plan-btn">Подключить</button>
-      </div>
+                <div class="menu-card fade-in">
+                    <div class="card-header">
+                        <h3 class="card-title">Тени Города</h3>
+                        <span class="card-price">₽ 320</span>
+                    </div>
+                    <p class="card-desc">Капучино с добавлением щепотки копченой паприки и черного кардамона.</p>
+                    <span class="card-tag">Нуар</span>
+                </div>
 
-      <div class="plan-card">
-        <div class="plan-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polygon points="10 8 16 12 10 16 10 8"></polygon>
-          </svg>
-        </div>
-        <h3 class="plan-name">Бизнес</h3>
-        <p class="plan-desc">Для офисов и компаний</p>
-        <div class="plan-price">
-          <span class="amount">4990</span>
-          <span class="currency">₽</span>
-          <span class="period">/ мес</span>
-        </div>
-        <div class="plan-speed">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
-          <div class="plan-speed-text">
-            <span class="label">Скорость до</span>
-            <span class="value">10 Гбит/с</span>
-          </div>
-        </div>
-        <ul class="plan-features">
-          <li>Симметричный канал</li>
-          <li>SLA 99.99%</li>
-          <li>Персональный менеджер</li>
-          <li>Резервный канал</li>
-          <li>DDoS-защита</li>
-          <li>Белые IP-адреса</li>
-        </ul>
-        <button class="plan-btn">Подключить</button>
-      </div>
-    </div>
-  </div>
-</section>
+                <div class="menu-card fade-in">
+                    <div class="card-header">
+                        <h3 class="card-title">Глитч</h3>
+                        <span class="card-price">₽ 420</span>
+                    </div>
+                    <p class="card-desc">Лавандовый раф с активированным углем. Вкус, который ломает матрицу.</p>
+                    <span class="card-tag">Хит</span>
+                </div>
 
-<section id="features">
-  <div class="section-container">
-    <div class="section-header">
-      <div class="section-label">Преимущества</div>
-      <h2>Почему выбирают <span>NeoNet</span></h2>
-      <p>Современные технологии и забота о каждом клиенте</p>
-    </div>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
-        </div>
-        <h3>Молниеносная скорость</h3>
-        <p>Оптоволокно до вашей квартиры. Скорость до 10 Гбит/с без просадок и ограничений.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          </svg>
-        </div>
-        <h3>Надёжность 99.9%</h3>
-        <p>Резервные каналы и современное оборудование обеспечивают стабильную работу сети.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-        </div>
-        <h3>Подключение за 24 часа</h3>
-        <p>Оставьте заявку — и уже на следующий день вы будете онлайн с максимальной скоростью.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-          </svg>
-        </div>
-        <h3>Поддержка 24/7</h3>
-        <p>Наши специалисты всегда на связи. Решим любой вопрос в чате, по телефону или лично.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-            <polyline points="16 21 16 3 8 3 8 21"></polyline>
-          </svg>
-        </div>
-        <h3>Без ограничений</h3>
-        <p>Никаких скрытых лимитов и замедлений. Пользуйтесь интернетом без оглядки на трафик.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-        </div>
-        <h3>Современное оборудование</h3>
-        <p>Wi-Fi 6E роутеры в подарок. Стабильный сигнал в каждой комнате вашего дома.</p>
-      </div>
-    </div>
-  </div>
-</section>
+                <div class="menu-card fade-in">
+                    <div class="card-header">
+                        <h3 class="card-title">Дождь по стеклу</h3>
+                        <span class="card-price">₽ 350</span>
+                    </div>
+                    <p class="card-desc">Холодный бамбл с вишней и тоником. Освежает как ночной ливень над мегаполисом.</p>
+                    <span class="card-tag">Холодный</span>
+                </div>
 
-<section id="coverage" class="coverage-section">
-  <div class="section-container">
-    <div class="coverage-grid">
-      <div class="coverage-content">
-        <div class="section-label">Покрытие</div>
-        <h2>Мы <span>рядом с вами</span></h2>
-        <p>Наша сеть охватывает более 50 городов России. Подключение доступно в большинстве жилых комплексов и бизнес-центров.</p>
-        <div class="coverage-stats">
-          <div class="coverage-stat">
-            <div class="num">50+</div>
-            <div class="label">Городов России</div>
-          </div>
-          <div class="coverage-stat">
-            <div class="num">2М+</div>
-            <div class="label">Довольных клиентов</div>
-          </div>
-          <div class="coverage-stat">
-            <div class="num">15К</div>
-            <div class="label">Км оптоволокна</div>
-          </div>
-          <div class="coverage-stat">
-            <div class="num">99.9%</div>
-            <div class="label">Uptime сети</div>
-          </div>
-        </div>
-      </div>
-      <div class="coverage-visual">
-        <div class="map-dots">
-          <div class="map-dot" style="top: 25%; left: 30%;"></div>
-          <div class="map-dot" style="top: 40%; left: 45%; animation-delay: 0.3s;"></div>
-          <div class="map-dot" style="top: 35%; left: 60%; animation-delay: 0.6s;"></div>
-          <div class="map-dot" style="top: 55%; left: 35%; animation-delay: 0.9s;"></div>
-          <div class="map-dot" style="top: 60%; left: 55%; animation-delay: 1.2s;"></div>
-          <div class="map-dot" style="top: 45%; left: 70%; animation-delay: 1.5s;"></div>
-          <div class="map-dot" style="top: 70%; left: 40%; animation-delay: 1.8s;"></div>
-          <div class="map-dot" style="top: 30%; left: 75%; animation-delay: 0.4s;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+                <div class="menu-card fade-in">
+                    <div class="card-header">
+                        <h3 class="card-title">Неон-Десерт</h3>
+                        <span class="card-price">₽ 290</span>
+                    </div>
+                    <p class="card-desc">Чизкейк с черничным гелем и съедобным серебром. Тает на языке, как воспоминания.</p>
+                    <span class="card-tag">Десерт</span>
+                </div>
+            </div>
+        </section>
 
-<section id="faq">
-  <div class="section-container">
-    <div class="section-header">
-      <div class="section-label">FAQ</div>
-      <h2>Частые <span>вопросы</span></h2>
-      <p>Ответы на самые популярные вопросы о наших услугах</p>
-    </div>
-    <div class="faq-container">
-      <div class="faq-item">
-        <div class="faq-question">
-          Как быстро можно подключиться?
-          <div class="faq-toggle">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </div>
-        </div>
-        <div class="faq-answer">
-          В большинстве случаев подключение занимает от 1 до 3 рабочих дней. Если ваш дом уже подключён к нашей сети, мы можем провести подключение в течение 24 часов после подачи заявки.
-        </div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">
-          Есть ли ограничения по трафику?
-          <div class="faq-toggle">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </div>
-        </div>
-        <div class="faq-answer">
-          Нет, все наши тарифы включают безлимитный трафик без каких-либо скрытых ограничений или замедлений скорости. Вы можете пользоваться интернетом столько, сколько нужно.
-        </div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">
-          Предоставляется ли роутер?
-          <div class="faq-toggle">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </div>
-        </div>
-        <div class="faq-answer">
-          Да, при подключении на тарифы «Оптимум» и выше мы предоставляем современный Wi-Fi 6 роутер бесплатно. Для тарифа «Старт» роутер можно взять в аренду за 100₽/мес или купить со скидкой 30%.
-        </div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">
-          Что делать, если пропал интернет?
-          <div class="faq-toggle">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </div>
-        </div>
-        <div class="faq-answer">
-          Наша техподдержка работает 24/7. Вы можете связаться с нами по телефону, в чате на сайте или через мобильное приложение. В большинстве случаев мы решаем проблему удалённо в течение 15 минут.
-        </div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">
-          Можно ли сменить тариф?
-          <div class="faq-toggle">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </div>
-        </div>
-        <div class="faq-answer">
-          Конечно! Вы можете изменить тариф в любое время через личный кабинет или мобильное приложение. Переход на новый тариф происходит мгновенно, а перерасчёт за текущий месяц производится автоматически.
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+        <section id="vibe">
+            <h2 class="section-title fade-in">// АТМОСФЕРА</h2>
+            <p class="vibe-text fade-in">
+                Мы находимся в самом сердце спального района, где <span>асфальт отражает вывески 24/7</span>. 
+                Здесь нет случайных людей. Только ты, твой ноутбук, старая пластинка на фоне и <span>идеальный эспрессо</span>. 
+                Заходи, когда город засыпает. Мы только просыпаемся.
+            </p>
+        </section>
+    </main>
 
-<section class="cta-section">
-  <div class="cta-box">
-    <h2>Готовы к новому интернету?</h2>
-    <p>Оставьте заявку и получите первый месяц со скидкой 50%. Подключение бесплатно.</p>
-    <button class="btn-primary">
-      Оставить заявку
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-        <polyline points="12 5 19 12 12 19"></polyline>
-      </svg>
-    </button>
-  </div>
-</section>
-
-<footer>
-  <div class="footer-container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <div class="logo">
-          <div class="logo-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
-              <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
-              <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-              <line x1="12" y1="20" x2="12.01" y2="20"></line>
-            </svg>
-          </div>
-          NeoNet
+    <footer id="contact">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>ЛОКАЦИЯ</h4>
+                <p>ул. Кибернетическая, 42</p>
+                <p>Подвал, вход с торца</p>
+                <p>Неон горит с 18:00</p>
+            </div>
+            <div class="footer-col">
+                <h4>РЕЖИМ РАБОТЫ</h4>
+                <p>Пн - Чт: 16:00 — 04:00</p>
+                <p>Пт - Вс: 14:00 — 06:00</p>
+                <p>Мы не спим. И вам не даем.</p>
+            </div>
+            <div class="footer-col">
+                <h4>СВЯЗЬ</h4>
+                <a href="#">Telegram: @noir_brew</a>
+                <a href="#">Instagram: @noir.coffee</a>
+                <a href="tel:+79990000000">+7 (999) 000-00-00</a>
+            </div>
         </div>
-        <p>Современный интернет-провайдер с оптоволоконной сетью нового поколения. Скорость, надёжность, поддержка.</p>
-      </div>
-      <div class="footer-col">
-        <h4>Услуги</h4>
-        <ul>
-          <li><a href="#">Домашний интернет</a></li>
-          <li><a href="#">Для бизнеса</a></li>
-          <li><a href="#">IP-телефония</a></li>
-          <li><a href="#">Видеонаблюдение</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Компания</h4>
-        <ul>
-          <li><a href="#">О нас</a></li>
-          <li><a href="#">Покрытие</a></li>
-          <li><a href="#">Вакансии</a></li>
-          <li><a href="#">Контакты</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Поддержка</h4>
-        <ul>
-          <li><a href="#">Личный кабинет</a></li>
-          <li><a href="#">Оплата</a></li>
-          <li><a href="#">Помощь</a></li>
-          <li><a href="#">8 800 555-35-35</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <div>© 2025 NeoNet. Все права защищены.</div>
-      <div class="social-links">
-        <a href="#" aria-label="Telegram">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21.5 4.5L2.5 12l6 2 2 6 11-15.5z"></path>
-          </svg>
-        </a>
-        <a href="#" aria-label="VK">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 7h4c0 4 2 6 4 6V7h4v6c2 0 4-2 4-6h4c0 5-3 9-8 9v3h-4v-3c-5 0-8-4-8-9z"></path>
-          </svg>
-        </a>
-        <a href="#" aria-label="YouTube">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
-            <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </div>
-</footer>
+        <p class="copyright">© 2024 NØIR BREW. Все тени защищены.</p>
+    </footer>
 
-<script>
-  // Плавное появление элементов при скролле
-  const observerOptions = {
-    threshold: 0.15,
-    rootMargin: '0px 0px -50px 0px'
-  };
+    <script>
+        // Плавное появление элементов при скролле
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, index) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => {
-          entry.target.classList.add('visible');
-        }, index * 100);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-  document.querySelectorAll('.plan-card, .feature-card').forEach(el => {
-    observer.observe(el);
-  });
-
-  // FAQ аккордеон
-  document.querySelectorAll('.faq-item').forEach(item => {
-    const question = item.querySelector('.faq-question');
-    question.addEventListener('click', () => {
-      const isActive = item.classList.contains('active');
-      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
-      if (!isActive) {
-        item.classList.add('active');
-      }
-    });
-  });
-
-  // Эффект навигации при скролле
-  let lastScroll = 0;
-  window.addEventListener('scroll', () => {
-    const nav = document.querySelector('nav');
-    const currentScroll = window.pageYOffset;
-    if (currentScroll > 50) {
-      nav.style.padding = '12px 5%';
-      nav.style.background = 'rgba(5, 8, 22, 0.9)';
-    } else {
-      nav.style.padding = '20px 5%';
-      nav.style.background = 'rgba(5, 8, 22, 0.7)';
-    }
-    lastScroll = currentScroll;
-  });
-
-  // Плавный скролл по якорям
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  });
-</script>
-
+        // Параллакс для фоновой сетки при движении мыши
+        const gridBg = document.querySelector('.grid-bg');
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            gridBg.style.transform = `translate(${x}px, ${y}px)`;
+        });
+    </script>
 </body>
 </html>
